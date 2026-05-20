@@ -207,6 +207,70 @@ app.post('/api/admin/licenses', (req, res) => {
     });
 });
 
+// Servir carpeta estática public
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 5. Listar usuarios (para el panel admin)
+app.get('/api/admin/users', (req, res) => {
+    const adminSecret = req.query.adminSecret;
+    const SECRET = "ADMIN_TALLER_CELULARES_PRO_SECURE";
+    if (adminSecret !== SECRET) {
+        return res.status(401).json({ error: "No autorizado." });
+    }
+    const db = loadDB();
+    const safeUsers = db.users.map(u => ({
+        email: u.email,
+        hwid: u.hwid,
+        registrationDate: u.registrationDate,
+        trialExpiryDate: u.trialExpiryDate,
+        isRegistered: u.isRegistered
+    }));
+    res.json(safeUsers);
+});
+
+// 6. Simular Binance Pay Checkout & Activación Automática
+app.post('/api/checkout/binance', (req, res) => {
+    const { email, plan, days } = req.body;
+    if (!email || !plan || !days) {
+        return res.status(400).json({ error: "Faltan datos del plan o cliente." });
+    }
+
+    const db = loadDB();
+    const cleanEmail = email.toLowerCase().trim();
+    let user = db.users.find(u => u.email.toLowerCase() === cleanEmail);
+
+    if (!user) {
+        user = {
+            email: cleanEmail,
+            passwordHash: hashSHA256("123456"), // Contraseña por defecto
+            hwid: "",
+            registrationDate: new Date().toISOString(),
+            trialExpiryDate: new Date().toISOString(),
+            isRegistered: true,
+            securityQuestion: "Nombre de tu primera mascota",
+            securityAnswerHash: hashSHA256("doral")
+        };
+        db.users.push(user);
+    }
+
+    let currentExpiry = new Date(user.trialExpiryDate);
+    if (currentExpiry < new Date()) {
+        currentExpiry = new Date();
+    }
+    user.trialExpiryDate = new Date(currentExpiry.getTime() + parseInt(days) * 24 * 60 * 60 * 1000).toISOString();
+    saveDB(db);
+
+    console.log(`[Binance Pay] Compra simulada exitosa para ${cleanEmail}. Plan: ${plan}. Días: ${days}.`);
+
+    res.json({
+        message: "Pago con Binance Pay confirmado y procesado con éxito.",
+        email: user.email,
+        plan: plan,
+        newExpiry: user.trialExpiryDate,
+        transactionId: "BINANCE-" + Math.random().toString(36).substr(2, 9).toUpperCase()
+    });
+});
+
 // Endpoint de prueba
 app.get('/api/status', (req, res) => {
     res.json({ status: "API de Licenciamiento Activa", date: new Date() });

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suite Taller Celulares Pro - Comercialización y Licencias</title>
+    <!-- Google Fonts Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">TallerCelulares<span>Pro</span></span>
+            </div>
+            <nav class="nav-links">
+                <a href="#features">Características</a>
+                <a href="#pricing">Comprar Licencia</a>
+                <a href="#portal">Portal Cliente</a>
+                <a href="#admin" class="admin-link">⚙️ Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span class="badge">NUEVA VERSIÓN 2.0</span>
+                <h1>El Sistema Definitivo para tu Taller de Celulares</h1>
+                <p>Gestiona clientes frecuentes, inventario avanzado con fotos y margen de ganancia Clarito, conexión directa ADB para copias de seguridad de Android y catálogo de servicios multimoneda.</p>
+                <div class="hero-buttons">
+                    <a href="#pricing" class="btn btn-primary">Adquirir Licencia ahora</a>
+                    <a href="#portal" class="btn btn-secondary">Probar 15 Días Gratis</a>
+                </div>
+            </div>
+            <div class="hero-image-container">
+                <img src="/images/suite_mockup.png" alt="Suite Taller Celulares Pro Mockup" class="hero-image">
+                <div class="glow-effect"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Diseñado para el Crecimiento de tu Negocio</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Inventario Premium</h3>
+                    <p>Alertas de stock bajo, fotos por producto e indicadores de margen de ganancia dinámica de Clarito App.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3>Copia de Seguridad ADB</h3>
+                    <p>Detecta y realiza backups directamente desde equipos Android conectados por USB de forma rápida.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💵</div>
+                    <h3>Servicios Multimoneda</h3>
+                    <p>Manejo simultáneo de precios en Bolívares (Bs.) y Dólares ($), rastreando costos de proveedores remotos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Planes de Comercialización</h2>
+            <p class="section-subtitle">Activa tu Suite al instante mediante nuestra pasarela automatizada con Binance Pay.</p>
+            
+            <div class="pricing-grid">
+                <!-- Plan 1 -->
+                <div class="pricing-card">
+                    <h3>Prueba Gratuita</h3>
+                    <div class="price">$0 <span>/ 15 días</span></div>
+                    <ul class="pricing-features">
+                        <li>Acceso completo a la Suite</li>
+                        <li>Bloqueo por 1 HWID de PC</li>
+                        <li>Soporte técnico limitado</li>
+                    </ul>
+                    <a href="#portal" class="btn btn-secondary" style="width: 100%; text-align: center;">Registrarse Gratis</a>
+                </div>
+                <!-- Plan 2 (Recomendado) -->
+                <div class="pricing-card recommended">
+                    <span class="card-badge">Más popular</span>
+                    <h3>Suscripción Mensual</h3>
+                    <div class="price">$10 <span>/ mes</span></div>
+                    <ul class="pricing-features">
+                        <li>Licencia activa por 30 días</li>
+                        <li>Acceso a actualizaciones</li>
+                        <li>Soporte Twilio & WhatsApp</li>
+                        <li>1 Activación de HWID</li>
+                    </ul>
+                    <button class="btn btn-primary btn-buy" data-plan="Mensual" data-price="10" data-days="30" style="width: 100%;">Comprar con Binance Pay</button>
+                </div>
+                <!-- Plan 3 -->
+                <div class="pricing-card">
+                    <h3>Licencia Vitalicia</h3>
+                    <div class="price">$99 <span>Pago único</span></div>
+                    <ul class="pricing-features">
+                        <li>Acceso ilimitado de por vida</li>
+                        <li>Actualizaciones gratuitas</li>
+                        <li>Soporte prioritario 24/7</li>
+                        <li>1 Activación de HWID</li>
+                    </ul>
+                    <button class="btn btn-primary btn-buy" data-plan="Vitalicia" data-price="99" data-days="36500" style="width: 100%;">Comprar con Binance Pay</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portal del Cliente (Login / Registro / Estado) -->
+    <section id="portal" class="portal">
+        <div class="container">
+            <h2 class="section-title">Portal de Licenciamiento</h2>
+            <div class="portal-box card-glass">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" id="tab-login-btn">Iniciar Sesión</button>
+                    <button class="tab-btn" id="tab-register-btn">Registrar Cuenta</button>
+                    <button class="tab-btn" id="tab-status-btn" style="display: none;">Mi Licencia</button>
+                </div>
+
+                <!-- Formulario Login -->
+                <div id="form-login" class="portal-form active">
+                    <h3>Ingresa a tu cuenta de Taller</h3>
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" id="login-email" placeholder="ejemplo@correo.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="login-pass" placeholder="••••••">
+                    </div>
+                    <button class="btn btn-primary" id="btn-login-action">Ingresar</button>
+                </div>
+
+                <!-- Formulario Registro -->
+                <div id="form-register" class="portal-form">
+                    <h3>Crear cuenta de prueba (15 días)</h3>
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" id="reg-email" placeholder="ejemplo@correo.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="reg-pass" placeholder="••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Respuesta de Seguridad (Nombre mascota)</label>
+                        <input type="text" id="reg-answer" placeholder="Ej: Fido">
+                    </div>
+                    <button class="btn btn-primary" id="btn-register-action">Crear Cuenta de Prueba</button>
+                </div>
+
+                <!-- Estado de Licencia (Solo visible al loguearse) -->
+                <div id="form-status" class="portal-form">
+                    <h3>Estado de tu Licencia Activa</h3>
+                    <div class="license-info">
+                        <div class="info-row">
+                            <span class="info-label">Usuario:</span>
+                            <span class="info-value" id="lic-email-display">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">HWID del Equipo:</span>
+                            <span class="info-value" id="lic-hwid-display">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Fecha de Vencimiento:</span>
+                            <span class="info-value" id="lic-expiry-display">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Estado:</span>
+                            <span class="info-value status-badge" id="lic-status-badge">Inactivo</span>
+                        </div>
+                    </div>
+                    <div class="license-actions">
+                        <button class="btn btn-primary" id="btn-extend-display">Comprar Más Días</button>
+                        <button class="btn btn-secondary" id="btn-logout">Cerrar Sesión</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel (Consola Secreta) -->
+    <section id="admin" class="admin">
+        <div class="container">
+            <h2 class="section-title">Consola de Control de Licencias</h2>
+            <div class="admin-auth card-glass" id="admin-auth-box">
+                <h3>Llave Maestra de Administrador</h3>
+                <p>Ingresa la contraseña de seguridad para cargar los datos en vivo.</p>
+                <div class="form-group">
+                    <input type="password" id="admin-secret-input" placeholder="Contraseña de Administrador" value="ADMIN_TALLER_CELULARES_PRO_SECURE">
+                </div>
+                <button class="btn btn-primary" id="btn-admin-auth">Cargar Base de Datos</button>
+            </div>
+
+            <!-- Panel Admin Completo -->
+            <div class="admin-panel card-glass" id="admin-panel-box" style="display: none;">
+                <div class="admin-header">
+                    <h3>Panel de Control Activo</h3>
+                    <button class="btn btn-secondary" id="btn-admin-reload">🔄 Actualizar Lista</button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario (Email)</th>
+                                <th>HWID Bloqueado</th>
+                                <th>Registro</th>
+                                <th>Expiración</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-table-body">
+                            <!-- Filas cargadas por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Binance Pay Checkout Modal -->
+    <div class="modal" id="binance-modal">
+        <div class="modal-content card-glass">
+            <span class="modal-close">&times;</span>
+            <div class="binance-header">
+                <span class="binance-logo-icon">🟡</span>
+                <h2>Checkout Binance Pay</h2>
+            </div>
+            <p>Escanea el código QR de Binance Pay desde tu aplicación para realizar el pago e iniciar activación.</p>
+            
+            <div class="checkout-details">
+                <div class="checkout-row">
+                    <span>Producto:</span>
+                    <strong id="chk-plan-display">-</strong>
+                </div>
+                <div class="checkout-row">
+                    <span>Monto a Pagar:</span>
+                    <strong id="chk-price-display">$0.00 USDT</strong>
+                </div>
+                <div class="checkout-row">
+                    <span>ID Transacción:</span>
+                    <span id="chk-tx-display" class="tx-id">-</span>
+                </div>
+            </div>
+
+            <div class="qr-container">
+                <!-- Dibujar código QR representativo -->
+                <div class="qr-code">
+                    <div class="qr-box">
+                        <div class="qr-pixel"></div>
+                        <span class="qr-center-logo">B</span>
+                    </div>
+                </div>
+                <p class="qr-hint">Generado automáticamente vía Binance Pay API</p>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Correo Electrónico a Activar / Renovar</label>
+                <input type="email" id="binance-checkout-email" placeholder="Ingresa el correo registrado">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="btn-confirm-payment">Simular Pago Confirmado</button>
+                <button class="btn btn-secondary modal-close-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 TallerCelularesPro. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
