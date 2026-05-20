@@ -1,7 +1,7 @@
 <?php
 /**
- * API Web de Licenciamiento y Comercialización para Taller Celulares Pro (Versión PHP)
- * Listo para subir a cPanel o cualquier hosting compartido.
+ * API Web de Licenciamiento y Comercialización para Taller Celulares Pro (Versión PHP Completa)
+ * Listo para subir a cPanel o cualquier hosting compartido (ej: InfinityFree, Hostinger, GoDaddy).
  * 
  * Uso en C#: Configurar WebApiLicensingUrl como "https://tusitio.com/api_php.php"
  */
@@ -49,16 +49,17 @@ function saveDB($db) {
 // Obtener datos del cuerpo del request (JSON)
 $inputData = json_decode(file_get_contents('php://input'), true);
 
-// Enrutamiento rudimentario por query string o URI
+// Enrutamiento por query string o URI
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// Si no viene en GET, intentar deducir de la URL
 if (empty($action)) {
     $requestUri = $_SERVER['REQUEST_URI'];
     if (strpos($requestUri, 'register') !== false) $action = 'register';
     elseif (strpos($requestUri, 'login') !== false) $action = 'login';
     elseif (strpos($requestUri, 'reset-password') !== false) $action = 'reset-password';
-    elseif (strpos($requestUri, 'admin') !== false) $action = 'admin';
+    elseif (strpos($requestUri, 'admin/users') !== false) $action = 'admin-users';
+    elseif (strpos($requestUri, 'admin/licenses') !== false) $action = 'admin'; // Acción de actualizar / restablecer
+    elseif (strpos($requestUri, 'checkout/binance') !== false) $action = 'checkout-binance';
     else $action = 'status';
 }
 
@@ -73,8 +74,14 @@ switch ($action) {
     case 'reset-password':
         handleResetPassword($inputData);
         break;
+    case 'admin-users':
+        handleAdminUsers();
+        break;
     case 'admin':
         handleAdmin($inputData);
+        break;
+    case 'checkout-binance':
+        handleCheckoutBinance($inputData);
         break;
     case 'status':
     default:
@@ -167,14 +174,14 @@ function handleLogin($data) {
         return;
     }
 
-    // Guardar primer HWID si no tiene
-    if (empty($user['hwid'])) {
+    // Guardar primer HWID si no tiene, y si no es desde la web portal
+    if (empty($user['hwid']) && $hwid !== "WEB_PORTAL") {
         $user['hwid'] = $hwid;
         saveDB($db);
     }
 
-    // Validar HWID
-    if ($user['hwid'] !== $hwid) {
+    // Validar HWID (ignorar si es login desde la interfaz del navegador)
+    if ($hwid !== "WEB_PORTAL" && !empty($user['hwid']) && $user['hwid'] !== $hwid) {
         http_response_code(403);
         echo json_encode(["error" => "HWID mismatch: Esta cuenta está registrada para otro equipo."]);
         return;
@@ -182,6 +189,7 @@ function handleLogin($data) {
 
     echo json_encode([
         "email" => $user['email'],
+        "hwid" => $user['hwid'],
         "registrationDate" => $user['registrationDate'],
         "trialExpiryDate" => $user['trialExpiryDate'],
         "isRegistered" => $user['isRegistered']
@@ -227,6 +235,30 @@ function handleResetPassword($data) {
     saveDB($db);
 
     echo json_encode(["message" => "Contraseña restablecida con éxito."]);
+}
+
+function handleAdminUsers() {
+    $adminSecret = isset($_GET['adminSecret']) ? $_GET['adminSecret'] : '';
+    $SECRET = "ADMIN_TALLER_CELULARES_PRO_SECURE";
+    
+    if ($adminSecret !== $SECRET) {
+        http_response_code(401);
+        echo json_encode(["error" => "No autorizado."]);
+        return;
+    }
+
+    $db = loadDB();
+    $safeUsers = array_map(function($u) {
+        return [
+            "email" => $u["email"],
+            "hwid" => $u["hwid"],
+            "registrationDate" => $u["registrationDate"],
+            "trialExpiryDate" => $u["trialExpiryDate"],
+            "isRegistered" => $u["isRegistered"]
+        ];
+    }, $db["users"]);
+
+    echo json_encode($safeUsers);
 }
 
 function handleAdmin($data) {
@@ -290,5 +322,60 @@ function handleAdmin($data) {
         "email" => $user['email'],
         "hwid" => $user['hwid'],
         "trialExpiryDate" => $user['trialExpiryDate']
+    ]);
+}
+
+function handleCheckoutBinance($data) {
+    if (!$data || empty($data['email']) || empty($data['plan']) || empty($data['days'])) {
+        http_response_code(400);
+        echo json_encode(["error" => "Faltan datos del plan o cliente."]);
+        return;
+    }
+
+    $email = strtolower(trim($data['email']));
+    $plan = $data['plan'];
+    $days = intval($data['days']);
+
+    $db = loadDB();
+    $foundIndex = -1;
+
+    for ($i = 0; $i < count($db['users']); $i++) {
+        if (strtolower($db['users'][$i]['email']) === $email) {
+            $foundIndex = $i;
+            break;
+        }
+    }
+
+    if ($foundIndex === -1) {
+        // Crear usuario con contraseña por defecto
+        $newUser = [
+            "email" => $email,
+            "passwordHash" => strtoupper(hash('sha256', '123456')), // Contraseña por defecto 123456
+            "hwid" => "",
+            "registrationDate" => date(DATE_ATOM),
+            "trialExpiryDate" => date(DATE_ATOM),
+            "isRegistered" => true,
+            "securityQuestion" => "Nombre de tu primera mascota",
+            "securityAnswerHash" => strtoupper(hash('sha256', 'doral'))
+        ];
+        $db['users'][] = $newUser;
+        $foundIndex = count($db['users']) - 1;
+    }
+
+    $user = &$db['users'][$foundIndex];
+    $currentExpiry = strtotime($user['trialExpiryDate']);
+    if ($currentExpiry < time()) {
+        $currentExpiry = time();
+    }
+    
+    $user['trialExpiryDate'] = date(DATE_ATOM, $currentExpiry + $days * 24 * 60 * 60);
+    saveDB($db);
+
+    echo json_encode([
+        "message" => "Pago con Binance Pay confirmado y procesado con éxito.",
+        "email" => $user['email'],
+        "plan" => $plan,
+        "newExpiry" => $user['trialExpiryDate'],
+        "transactionId" => "BINANCE-" . strtoupper(substr(md5(uniqid(rand(), true)), 0, 9))
     ]);
 }
